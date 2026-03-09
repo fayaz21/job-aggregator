@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JobRadar &mdash; Job Discovery Dashboard</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      font-size: 14px;
+      background: #f1f5f9;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: #0f172a;
+      padding: 0 32px;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: #3b82f6;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-tagline {
+      font-size: 11px;
+      color: #94a3b8;
+      letter-spacing: 0.3px;
+      margin-top: 1px;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 2px rgba(34,197,94,0.25);
+    }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+      background: #1e293b;
+      padding: 0 32px;
+    }
+
+    .stats-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 10px 0;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .stat-value {
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .stat-divider {
+      width: 1px;
+      height: 16px;
+      background: #334155;
+    }
+
+    /* ── Main container ── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 32px;
+    }
+
+    /* ── Filter card ── */
+    .filter-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .filter-label-row {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: #94a3b8;
+      margin-bottom: 10px;
+    }
+
+    .filter-form {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .filter-group label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .filter-form input,
+    .filter-form select {
+      height: 36px;
+      padding: 0 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #1e293b;
+      background: #f8fafc;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+
+    .filter-form input:focus,
+    .filter-form select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+      background: #fff;
+    }
+
+    .filter-form input { min-width: 180px; }
+    .filter-form select { min-width: 130px; }
+
+    .filter-actions {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      margin-left: 4px;
+    }
+
+    .btn-primary {
+      height: 36px;
+      padding: 0 18px;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover { background: #2563eb; }
+
+    .btn-clear {
+      height: 36px;
+      padding: 0 14px;
+      background: transparent;
+      color: #94a3b8;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .btn-clear:hover { color: #1e293b; border-color: #cbd5e1; }
+
+    /* ── Results header ── */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .results-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .results-count {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    /* ── Table card ── */
+    .table-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: #f8fafc;
+      padding: 11px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #64748b;
+      border-bottom: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    tbody tr:hover { background: #f8fafc; }
+
+    .job-title {
+      font-weight: 600;
+      font-size: 13.5px;
+      color: #0f172a;
+      line-height: 1.3;
+    }
+
+    .job-company {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Source badges */
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .source-remotive        { background: #d1fae5; color: #065f46; }
+    .source-indeed          { background: #dbeafe; color: #1e40af; }
+    .source-glassdoor       { background: #fef3c7; color: #92400e; }
+    .source-weworkremotely  { background: #ede9fe; color: #5b21b6; }
+    .source-unknown         { background: #f1f5f9; color: #475569; }
+
+    /* Job type pills */
+    .type-pill {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .type-full_time  { background: #eff6ff; color: #1d4ed8; }
+    .type-contract   { background: #fff7ed; color: #c2410c; }
+    .type-part_time  { background: #f0fdf4; color: #15803d; }
+    .type-none       { color: #94a3b8; font-size: 12px; }
+
+    /* View button */
+    .btn-view {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 12px;
+      background: #0f172a;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    .btn-view:hover { background: #1e293b; }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 64px 32px;
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .empty-icon { font-size: 36px; margin-bottom: 12px; }
+
+    .empty-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+
+    .empty-subtitle { font-size: 13px; color: #94a3b8; }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+
+    .pagination-info {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-page {
+      height: 34px;
+      padding: 0 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #fff;
+      color: #1e293b;
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .btn-page:hover { border-color: #3b82f6; color: #3b82f6; background: #eff6ff; }
+
+    .page-number {
+      height: 34px;
+      min-width: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f172a;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">&#128269;</div>
+        <div class="logo-text">
+          <span class="logo-name">JobRadar</span>
+          <span class="logo-tagline">Discover jobs before everyone else</span>
+        </div>
+      </div>
+      <div class="header-meta">
+        <div class="live-badge">
+          <div class="live-dot"></div>
+          Live
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Stats strip -->
+  <div class="stats-strip">
+    <div class="stats-inner">
+      <div class="stat">
+        <span>Total jobs</span>
+        <span class="stat-value">{{ total_jobs }}</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span>Active sources</span>
+        <span class="stat-value">{{ sources | length }}</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span>Last updated</span>
+        <span class="stat-value">{{ last_updated[:10] if last_updated else 'never' }}</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span>Sources</span>
+        <span class="stat-value">{{ sources | join(', ') }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="container">
+
+    <!-- Filters -->
+    <div class="filter-card">
+      <div class="filter-label-row">Search &amp; Filter</div>
+      <form class="filter-form" method="get" action="/">
+        <div class="filter-group">
+          <label for="keyword">Keyword</label>
+          <input type="text" name="keyword" id="keyword"
+                 value="{{ selected_keyword or '' }}"
+                 placeholder="e.g. machine learning">
+        </div>
+
+        <div class="filter-group">
+          <label for="source">Source</label>
+          <select name="source" id="source">
+            <option value="">All sources</option>
+            {% for s in sources %}
+            <option value="{{ s }}" {% if s == selected_source %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="job_type">Type</label>
+          <select name="job_type" id="job_type">
+            <option value="">All types</option>
+            <option value="full_time"  {% if selected_job_type == 'full_time'  %}selected{% endif %}>Full Time</option>
+            <option value="contract"   {% if selected_job_type == 'contract'   %}selected{% endif %}>Contract</option>
+            <option value="part_time"  {% if selected_job_type == 'part_time'  %}selected{% endif %}>Part Time</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="days">Posted</label>
+          <select name="days" id="days">
+            <option value="">Any time</option>
+            <option value="1"  {% if selected_days == 1  %}selected{% endif %}>Last 24h</option>
+            <option value="7"  {% if selected_days == 7  %}selected{% endif %}>Last 7 days</option>
+            <option value="30" {% if selected_days == 30 %}selected{% endif %}>Last 30 days</option>
+          </select>
+        </div>
+
+        <div class="filter-actions">
+          <button class="btn-primary" type="submit">Search</button>
+          {% if selected_source or selected_keyword or selected_days or selected_job_type %}
+          <a class="btn-clear" href="/">Clear</a>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+
+    <!-- Results header -->
+    <div class="results-header">
+      <span class="results-title">Job Listings</span>
+      <span class="results-count">
+        {{ jobs | length }} result(s) on page {{ page }}
+        {% if selected_keyword %} &mdash; matching &ldquo;{{ selected_keyword }}&rdquo;{% endif %}
+      </span>
+    </div>
+
+    <!-- Table -->
+    {% if jobs %}
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Job</th>
+            <th>Source</th>
+            <th>Type</th>
+            <th>Posted</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for job in jobs %}
+          <tr>
+            <td>
+              <div class="job-title">{{ job.title }}</div>
+              <div class="job-company">{{ job.company or '—' }}</div>
+            </td>
+            <td>
+              <span class="source-badge source-{{ job.source or 'unknown' }}">
+                {{ job.source or 'unknown' }}
+              </span>
+            </td>
+            <td>
+              {% if job.job_type %}
+              <span class="type-pill type-{{ job.job_type }}">{{ job.job_type | replace('_', ' ') | title }}</span>
+              {% else %}
+              <span class="type-none">—</span>
+              {% endif %}
+            </td>
+            <td style="color:#64748b; font-size:12px; white-space:nowrap;">
+              {{ job.posted_at[:10] if job.posted_at else '—' }}
+            </td>
+            <td>
+              <a class="btn-view" href="{{ job.url }}" target="_blank">
+                View &#8599;
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">&#128270;</div>
+      <div class="empty-title">No jobs found</div>
+      <div class="empty-subtitle">Try adjusting your filters or run the agent to fetch new listings.</div>
+    </div>
+    {% endif %}
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <span class="pagination-info">Page {{ page }}</span>
+      <div class="pagination-controls">
+        {% if page > 1 %}
+        <a class="btn-page" href="/?page={{ page - 1 }}{% if selected_source %}&source={{ selected_source }}{% endif %}{% if selected_keyword %}&keyword={{ selected_keyword }}{% endif %}{% if selected_days %}&days={{ selected_days }}{% endif %}{% if selected_job_type %}&job_type={{ selected_job_type }}{% endif %}">
+          &larr; Previous
+        </a>
+        {% endif %}
+        <span class="page-number">{{ page }}</span>
+        {% if has_next %}
+        <a class="btn-page" href="/?page={{ page + 1 }}{% if selected_source %}&source={{ selected_source }}{% endif %}{% if selected_keyword %}&keyword={{ selected_keyword }}{% endif %}{% if selected_days %}&days={{ selected_days }}{% endif %}{% if selected_job_type %}&job_type={{ selected_job_type }}{% endif %}">
+          Next &rarr;
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+# Environment
+.env
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Database files
+*.db
+*.sqlite3
+
+# OS
+.DS_Store
